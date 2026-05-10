@@ -22,21 +22,15 @@ V_n = A**bound * V_0 + B * (1 - A**bound) / (1 - A)  # for A != 1
 lim = limit(V_n / V_src, bound, oo)  # lim n -> infty [V_out/V_src]
 eq = Eq(lim, D)
 
-solution = solve(eq, D)  # turn equation into expr of D = ...
-fn = solution[0]
+# solution = solve(eq, tau)  # turn equation into expr of tau = ...
+# fn = solution[0]
+# print(fn.subs(constants).subs({D: 0.95})) # not implemented in sympy!
 
 # 20 microseconds
 cycle_time = 20 * 1e-6
 source_voltage = 5
 constants = {T_cycle: cycle_time, V_src: source_voltage}
 const_eq = eq.subs(constants)
-
-
-def solve_bound(bound: float, guess: float):
-    bound_eq = const_eq.subs({D: bound})
-    expr = bound_eq.lhs - bound_eq.rhs
-    print(expr)
-    return nsolve(expr, tau, guess)
 
 
 def smallest_tau(
@@ -63,7 +57,7 @@ def test_bound(bound: float):
     print(f"RC -> {bound}: tau = {tau}, delta < 0.01")
 
 
-test_bound(0.95)
+test_bound(0.9)
 
 prec = 0.001
 bounds = np.linspace(0 + prec, 1 - prec, num=20)
@@ -73,7 +67,7 @@ plt.figure()
 plt.plot(bounds, taus, marker="o")
 plt.xlabel("Duty Cycle")
 plt.ylabel("Time Constant (tau)")
-plt.title("Minimum Time Constant for < 1% Error from Duty Cycle")
+# plt.title("Minimum Time Constant for < 1% Error from Duty Cycle")
 plt.grid()
 plt.tight_layout()
 plt.savefig("plot.png", dpi=200)
